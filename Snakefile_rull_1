@@ -1,0 +1,13 @@
+sra_id_list = ['SRR.......']
+
+rule all:
+        input:
+                expand("{SRAID}.sra", SRAID=sra_id_list)
+
+rule download_SRA_file:
+        input:
+                "{SRAID}"
+        output:
+                "{SRAID}.sra"
+        shell:
+                "wget -O ${SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/${SRAID}/${SRAID}.1"
