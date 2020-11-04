@@ -18,10 +18,10 @@ Les données sur lesquelles nous travaillons sont disponibles au format .sra sur
 
 ## Méthodes
 Nous avons établi ce workflow, que nous avons implémenté en utilisant le gestionnaire de workflow Snakemake :
-	1. Récupérer les données de séquençage au format FastQ ;
-	2. Récupérer le génome humain de référence et indexer le génome avec l'outil STAR ;
-	3. Aligner les données de séquençage sur le génome, avec les annotations du génome préalablement obtenues ;
-	4. Compter les reads sur le fichier BAM obtenu avec l'outil SUBREAD ;
-	5. Faire l'analyse statistique avec le package DESeq de R.
+1. Récupérer les données de séquençage au format FastQ ;
+2. Récupérer le génome humain de référence et indexer le génome avec l'outil STAR ;
+3. Aligner les données de séquençage sur le génome, avec les annotations du génome préalablement obtenues ;
+4. Compter les reads sur le fichier BAM obtenu avec l'outil SUBREAD ;
+5. Faire l'analyse statistique avec le package DESeq de R.
 
 L'utilisation de Snakemake permet une garantie de la reproductibilité de notre workflow.
