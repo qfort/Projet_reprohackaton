@@ -4,7 +4,7 @@ id_bam=[“1”,"2","3","4","5","6","7","8"] # COMBIEN DE FICHIERS BAM ON ATTEND
 
 rule all:	# rule finale
 	input:
-		expand("{SRAID}.fastq.gz",SRAID=sra_id_list),"ref/ref.fa", "chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt"
+		expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa", "chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt"
 
 
 rule convert_sra_fastq: #conversion du sra en fastq
@@ -29,19 +29,21 @@ rule indexation_genome:
 		"ref/ref.fa"	
 	output:
 		"chrLength.txt","chrName.txt","chrNameLength.txt","chrStart.txt"
+	threads: 4
 	shell:
-		"STAR --runThreadN 2 --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles {input}"
+		"STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles {input}"
 
 rule mapping_FastQ_files:
 	input:
-		"{SRAID}_1.fastq.gz","{SRAID}_2.fastq.gz"
+		fastq1="{SRAID}_1.fastq.gz",fastq2="{SRAID}_2.fastq.gz"
 	output:
 		"{id_bam}.bam"
+	threads: 4
 	shell:
 		"STAR --outSAMstrandField intronMotif --outFilterMismatchNmax 4 --outFilterMultimapNmax 10 \
 --genomeDir ref \
---readFilesIn <(gunzip -c <fastq1>) <(gunzip -c <fastq2>) \ #Comment le coder ?
---runThreadN 2 \
+--readFilesIn <(gunzip -c {input.fastq1) <(gunzip -c {input.fastq2}) \ #Verifier la syntaxe
+--runThreadN {threads} \
 --outSAMunmapped None \
 --outSAMtype BAM SortedByCoordinate \
 --outStd BAM_SortedByCoordinate \
