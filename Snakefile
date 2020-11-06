@@ -1,6 +1,10 @@
+# Ajouter les containers
+
 sra_id_list=['SRR628582','SRR628583','SRR628584','SRR628585','SRR628586','SRR628587','SRR628588','SRR628589']
 list_chr=["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15", "16","17","18","19","20","21","22","MT"]
 id_bam=[“1”,"2","3","4","5","6","7","8"] # COMBIEN DE FICHIERS BAM ON ATTEND ?
+
+# Ajouter le chargement des données
 
 rule all:	# rule finale
 	input:
