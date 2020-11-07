@@ -15,8 +15,9 @@ shell("wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.
 
 # Rules
 rule all:	# rule finale
-	input:
-		expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa", "chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt"
+	input: # Met tout pour le moment, on mettra que les vrais inputs quand le workflow sera complet
+		expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa",
+		"chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt","genomeParameters.txt","Genome","SA","SAindex" 
 
 
 rule convert_sra_fastq: #conversion du sra en fastq
@@ -24,8 +25,10 @@ rule convert_sra_fastq: #conversion du sra en fastq
 		"{SRAID}.sra"
 	output:
 		"{SRAID}_1.fastq.gz","{SRAID}_2.fastq.gz"
+	singularity:
+		"docker://evolbioinfo/sratoolkit:v2.10.8"
 	shell:
-		 "fastq-dump --gzip --split-files {input}"
+		 "vdb-config -i | fastq-dump --gzip --split-files {input}"
 
 
 rule unzip_genome:#recuperer le genome et le mettre dans un repertoire ref
@@ -40,8 +43,10 @@ rule indexation_genome:
 	input:
 		"ref/ref.fa"	
 	output:
-		"chrLength.txt","chrName.txt","chrNameLength.txt","chrStart.txt"
-	threads: 4
+		"chrLength.txt","chrName.txt","chrNameLength.txt","chrStart.txt","genomeParameters.txt","Genome","SA","SAindex"
+	threads: 16
+	singularity: 
+		"docker://evolbioinfo/star:v2.7.6a"
 	shell:
 		"STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles {input}"
 
