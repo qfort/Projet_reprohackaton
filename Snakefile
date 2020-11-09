@@ -82,9 +82,9 @@ rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_Fast
 	input:
 		"{SRAID}.bam"
 	output:
-		"AUCUNE IDEE"
+		"{SRAID}.bam.bai"
 	singularity:
 		"docker://evolbioinfo/samtools:v1.11"
 	shell:
-		"samtools index {input}.bam"
+		"samtools index {input} {output}"
 
