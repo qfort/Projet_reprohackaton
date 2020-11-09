@@ -66,16 +66,7 @@ rule mapping_FastQ_files: # Aligne les sequences d'interet sur le genome (utilis
 		"docker://evolbioinfo/star:v2.7.6a"
 	shell:
 		"""
-		STAR --outSAMstrandField intronMotif --outFilterMismatchNmax 4 --outFilterMultimapNmax 10 \
-			--genomeDir ref \
-			--readFilesIn <(gunzip -c {input.fastq1}) <(gunzip -c {input.fastq2}) \
-			--runThreadN {threads} \
-			--outSAMunmapped None \
-			--outSAMtype BAM SortedByCoordinate \
-			--outStd BAM_SortedByCoordinate \
-			--genomeLoad NoSharedMemory \
-			--limitBAMsortRAM 7000000000 \	# Combien mettre ?
-			> {output}
+		STAR --outSAMstrandField intronMotif --outFilterMismatchNmax 4 --outFilterMultimapNmax 10 --genomeDir ref --readFilesIn <(gunzip -c {input.fastq1}) <(gunzip -c {input.fastq2}) --runThreadN {threads} --outSAMunmapped None --outSAMtype BAM SortedByCoordinate --outStd BAM_SortedByCoordinate --genomeLoad NoSharedMemory --limitBAMsortRAM 7000000000 > {output}
 		"""
 
 rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_FastQ_files
