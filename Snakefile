@@ -21,7 +21,8 @@ rule all:
 	input: # Met tout pour le moment, on mettra que les vrais inputs quand le workflow sera complet
 		expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa",
 		"chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt","genomeParameters.txt","Genome","SA","SAindex",
-		expand("{SRAID}.bam",SRAID=sra_id_list)
+		expand("{SRAID}.bam",SRAID=sra_id_list),expand("{SRAID}.bam.bai",SRAID=sra_id_list),
+		"gene_output.counts","gene_output.counts.summary","exon_output.counts","exon_output.counts.summary"
 
 
 rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (utilisation du container sratoolkit)
@@ -79,3 +80,26 @@ rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_Fast
 	shell:
 		"samtools index {input} {output}"
 
+
+rule gene_count:
+        input:
+                annot="Homo_sapiens.GRCh38.101.chr.gtf"#,bam_files="{SRAID}.bam" --> trouver comment l'ecrire pour eviter de mettre *.bam dans la commande shell
+        output:
+                "gene_output.counts","gene_output.counts.summary"
+        threads: 16
+        singularity:
+                "docker://evolbioinfo/subread:v2.0.1"
+        shell:
+                "featureCounts -T {threads} -t gene -g gene_id -s 0 -a {input.annot} -o {output} *.bam"
+
+
+rule exon_count:
+        input:
+                annot="Homo_sapiens.GRCh38.101.chr.gtf"#,bam_files="{SRAID}.bam" --> trouver comment l'ecrire pour eviter de mettre *.bam dans la commande shell
+        output:
+                "exon_output.counts","exon_output.counts.summary"
+        threads:16
+        singularity:
+                "docker://evolbioinfo/subread:v2.0.1"
+        shell:
+                "featureCounts -T {threads} -t exon -g exon_id -s 0 -a {input.annot} -o {output} *.bam"
