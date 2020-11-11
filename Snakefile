@@ -23,8 +23,8 @@ rule all:
 		#expand("{SRAID}.bam",SRAID=sra_id_list),expand("{SRAID}.bam.bai",SRAID=sra_id_list),
 		"gene_output.counts","exon_output.counts"
 
-#téléchargement des fichiers .sra
-rule download_sra:
+
+rule download_sra:#téléchargement des fichiers .sra
   output:
     expand("{SRAID}.sra",SRAID=sra_id_list)
     
