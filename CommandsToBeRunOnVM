@@ -4,5 +4,5 @@ cd ../../mnt/mydatalocal
 mkdir git_repository
 cd git_repository
 git clone https://github.com/qfort/Projet_reprohackaton
-cd Projet_reprohackathon
+cd Projet_reprohackaton
 snakemake --use-singularity --cores 16 -s Snakefile
