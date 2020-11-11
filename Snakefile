@@ -37,7 +37,7 @@ rule download_sra: #téléchargement des fichiers .sra
 
 rule download_chr: #téléchargement des chromosomes non dézippés 
   output:
-    expand("chromosomes/{CHR}.fa.gz",CHR=list_chr)
+    expand("{CHR}.fa.gz",CHR=list_chr)
   
   run:
     for i in range(len(list_chr)):
@@ -58,7 +58,7 @@ rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (
 
 rule unzip_genome: # Decompresser le genome et le mettre dans un repertoire ref
 	input:
-		expand("chromosomes/{CHR}.fa.gz",CHR=list_chr)
+		expand("{CHR}.fa.gz",CHR=list_chr)
 	output:
 		"ref/ref.fa"
 	shell:
