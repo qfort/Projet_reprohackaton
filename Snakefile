@@ -44,6 +44,15 @@ rule download_chr: #téléchargement des chromosomes non dézippés
       shell("wget -O {chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
 
 
+rule download_annotations_genome:
+	output:
+		"Homo_sapiens.GRCh38.101.chr.gtf"
+	shell:
+		"""
+		wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz
+		gunzip Homo_sapiens.GRCh38.101.chr.gtf.gz
+		"""
+
 
 rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (utilisation du container sratoolkit)
 	input:
