@@ -24,14 +24,26 @@ rule all:
 		"gene_output.counts","exon_output.counts"
 
 
-rule download_sra:#téléchargement des fichiers .sra
+		
+rule download_sra: #téléchargement des fichiers .sra
   output:
     expand("{SRAID}.sra",SRAID=sra_id_list)
     
   run:
     for k in range(len(sra_id_list)):
       shell("wget -O {SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
-    
+
+
+
+rule download_chr: #téléchargement des chromosomes non dézippés 
+  output:
+    expand("{CHR}.fa.gz",CHR=list_chr)
+  
+  run:
+    for i in range(len(list_chr)):
+      shell("wget -O {chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
+
+
 
 rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (utilisation du container sratoolkit)
 	input:
