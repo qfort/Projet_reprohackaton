@@ -23,6 +23,15 @@ rule all:
 		#expand("{SRAID}.bam",SRAID=sra_id_list),expand("{SRAID}.bam.bai",SRAID=sra_id_list),
 		"gene_output.counts","exon_output.counts"
 
+#téléchargement des fichiers .sra
+rule download_sra:
+  output:
+    expand("{SRAID}.sra",SRAID=sra_id_list)
+    
+  run:
+    for k in range(len(sra_id_list)):
+      shell("wget -O {SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
+    
 
 rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (utilisation du container sratoolkit)
 	input:
