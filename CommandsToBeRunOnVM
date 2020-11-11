@@ -1,4 +1,5 @@
 conda activate
+conda install singularity=3.6.3
 cd ../../mnt/mydatalocal
 mkdir git_repository
 cd git_repository
