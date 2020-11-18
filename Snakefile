@@ -4,24 +4,24 @@ id_bam=["1","2","3","4","5","6","7","8"] # COMBIEN DE FICHIERS BAM ON ATTEND ?
 
 ### Chargement des donnees
 # Donnees de sequencage (fichiers .sra)
-for k in range(len(sra_id_list)):
-        shell("wget -O {SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
+#for k in range(len(sra_id_list)):
+#        shell("wget -O {SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
 
 # Chromosomes
-for i in range(len(list_chr)):
-        shell("wget -O {chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
+#for i in range(len(list_chr)):
+#        shell("wget -O {chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
 
 # Annotations du genome
-shell("wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz")
-shell("gunzip Homo_sapiens.GRCh38.101.chr.gtf.gz")
+#shell("wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz")
+#shell("gunzip Homo_sapiens.GRCh38.101.chr.gtf.gz")
 
 
 ### Rules
 rule all:
 	input: # Met tout pour le moment, on mettra que les vrais inputs quand le workflow sera complet
-		expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa",
-		"chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt","genomeParameters.txt","Genome","SA","SAindex",
-		expand("{SRAID}.bam",SRAID=sra_id_list),expand("{SRAID}.bam.bai",SRAID=sra_id_list),
+		#expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa",
+		#"chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt","genomeParameters.txt","Genome","SA","SAindex",
+		#expand("{SRAID}.bam",SRAID=sra_id_list),expand("{SRAID}.bam.bai",SRAID=sra_id_list),
 		"gene_output.counts","gene_output.counts.summary","exon_output.counts","exon_output.counts.summary"
 
 
