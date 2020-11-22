@@ -1,7 +1,7 @@
-########### Study of the differential expression of genes according to the group of interest ##################
+########### Differential expression analysis of genes according to the group of interest ##################
 
 
-rm(list=ls()) ## cleaning 
+rm(list=ls()) ## environment cleaning
 
 ## Loading of the librairies 
 library("DESeq2")
@@ -11,16 +11,16 @@ library(EnhancedVolcano)
 library(org.Hs.eg.db)
 
 ### To define the working directory
-setwd('C:/Users/maryo/OneDrive/3A/COURS/AMI2B/Reprohackaton/Projet') 
+setwd('/mnt/mydatalocal/') ## A MODIFIER !!!! 
 
 
 #### PART1 : IMPORTING DATA ####
 ## Loading of table.counts
 countData <- read.table("gene_output.counts", sep ="\t", skip=1, header=T, row.names = 1)
-countData <- countData[-(1:5)] ## éliminer les 5 premières colonnes inutiles
+countData <- countData[-(1:5)] ## discard the 5 first columns to keep only the 8 samples in each column
 
 ## Change the name of the columns of CountData to remove .bam
-colnames(countData) <- sub(".bam", "", colnames(countData)) ## on enlève les 4 derniers caractères i.e le ".bam"
+colnames(countData) <- sub(".bam", "", colnames(countData)) ## discard the last 4 characters i.e le ".bam"
 #rownames(countData)[duplicated(rownames(countData))]
 
 
@@ -49,7 +49,7 @@ dds <- DESeqDataSetFromMatrix(countData=countData_mat,
 #### PART 2 : DIFFERENTIAL EXPRESSION ANALYSIS  ####
 dds <- DESeq(dds) ## to do the differential expression analysis of genes
 
-res <- results(dds, tidy =T) ## to getlogFC by imposing order, tidy = T to have the ID in the column
+res <- results(dds, tidy =T) ## tidy = T to have ENSEMBL id as the first column not as rownames 
 
 ## Remove the NA data of the logFoldChange and pvalue columns
 res <- res[-which(is.na(res$log2FoldChange)),]
@@ -117,7 +117,7 @@ data_article$log2FoldChange <- sapply(data_article$Fold.Change, function(x) {-lo
 
 ## Collect the common genes in our analysis and order it alphabetically to have the same order
 our_analysis <- fichier_sortie[which(fichier_sortie[,1] %in% common),]
-our_analysis <- our_analysis[order(our_analysis$row),]
+our_analysis <- our_analysis[order(our_analysis$ENSEMBL_id),]
 
 ## Fusion of the two dataframes
 data_merge <- cbind(data_article, our_analysis$log2FoldChange, our_analysis$pvalue)
