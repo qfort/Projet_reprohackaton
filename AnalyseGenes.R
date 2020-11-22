@@ -59,9 +59,9 @@ res <- res[-which(is.na(res$pvalue)),]
 EnhancedVolcano(res,
                 lab = res[,1],
                 x = 'log2FoldChange',
-                y = 'padj',
+                y = 'pvalue',
                 ylim = c(0,10),
-                pCutoff = 0.1,
+                pCutoff = 0.05,
                 FCcutoff = log2(1.5),
                 labSize = 4.0)
 
