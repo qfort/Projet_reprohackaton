@@ -16,9 +16,7 @@ countData <- read.table("gene_output.counts", sep ="\t", skip=1, header=T, row.n
 countData <- countData[-(1:5)] ## discard the 5 first columns to keep only the 8 samples in each column
 
 ## Change the name of the columns of CountData to remove .bam
-colnames(countData) <- sub(".bam", "", colnames(countData)) ## discard the last 4 characters i.e le ".bam"
-#rownames(countData)[duplicated(rownames(countData))]
-
+colnames(countData) <- sub(".bam", "", colnames(countData)) ## discard the last 4 characters i.e ".bam"
 
 ## Get metadata and keep the columns of interest
 metaData <- read.csv('SraRunTable.txt', header = TRUE, sep = "\t")
