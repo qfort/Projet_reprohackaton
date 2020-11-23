@@ -1,47 +1,30 @@
 sra_id_list=["SRR628582","SRR628583","SRR628584","SRR628585","SRR628586","SRR628587","SRR628588","SRR628589"]
-list_chr=["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","MT"]
-
-### Chargement des donnees
-# Donnees de sequencage (fichiers .sra)
-#for k in range(len(sra_id_list)):
-#        shell("wget -O {SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
-
-# Chromosomes
-#for i in range(len(list_chr)):
-#        shell("wget -O {chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
-
-# Annotations du genome
-#shell("wget ftp://ftp.ensembl.org/pub/release-101/gtf/homo_sapiens/Homo_sapiens.GRCh38.101.chr.gtf.gz")
-#shell("gunzip Homo_sapiens.GRCh38.101.chr.gtf.gz")
+list_chr=["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","MT","X","Y"]
 
 
 ### Rules
 rule all:
-	input: # Met tout pour le moment, on mettra que les vrais inputs quand le workflow sera complet
-		#expand("{SRAID}_1.fastq.gz",SRAID=sra_id_list),expand("{SRAID}_2.fastq.gz",SRAID=sra_id_list),"ref/ref.fa",
-		#"chrLength.txt", "chrName.txt", "chrNameLength.txt","chrStart.txt","genomeParameters.txt","Genome","SA","SAindex",
-		#expand("{SRAID}.bam",SRAID=sra_id_list),expand("{SRAID}.bam.bai",SRAID=sra_id_list),
-		"gene_output.counts","exon_output.counts"
-
+	input: 
+		"gene_output.counts","exon_output.counts"#,"DE_analysis.txt" # Ajouter l'output du splicing
 
 		
 rule download_sra: #téléchargement des fichiers .sra
   output:
-    expand("{SRAID}.sra",SRAID=sra_id_list)
+    expand("sra_folder/{SRAID}.sra",SRAID=sra_id_list)
     
   run:
     for k in range(len(sra_id_list)):
-      shell("wget -O {SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
+      shell("wget -O sra_folder/{SRAID}.sra https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-5/{SRAID}/{SRAID}.1".format(SRAID=sra_id_list[k]))
 
 
 
 rule download_chr: #téléchargement des chromosomes non dézippés 
   output:
-    expand("{CHR}.fa.gz",CHR=list_chr)
+    expand("chr_folder/{CHR}.fa.gz",CHR=list_chr)
   
   run:
     for i in range(len(list_chr)):
-      shell("wget -O {chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
+      shell("wget -O chr_folder/{chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
 
 
 rule download_annotations_genome:
@@ -56,18 +39,18 @@ rule download_annotations_genome:
 
 rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (utilisation du container sratoolkit)
 	input:
-		"{SRAID}.sra"
+		"sra_folder/{SRAID}.sra"
 	output:
-		"{SRAID}_1.fastq.gz","{SRAID}_2.fastq.gz"
+		"fastq_folder/{SRAID}_1.fastq.gz","fastq_folder/{SRAID}_2.fastq.gz"
 	singularity:
 		"docker://evolbioinfo/sratoolkit:v2.10.8"
 	shell:
-		"fastq-dump --gzip --split-files {input}"
+		"fastq-dump --gzip --outdir fastq_folder/ --split-files {input}"
 
 
 rule unzip_genome: # Decompresser le genome et le mettre dans un repertoire ref
 	input:
-		expand("{CHR}.fa.gz",CHR=list_chr)
+		expand("chr_folder/{CHR}.fa.gz",CHR=list_chr)
 	output:
 		"ref/ref.fa"
 	shell:
@@ -88,9 +71,9 @@ rule indexation_genome: # Indexe le genome et cree de nombreux fichiers de sorti
 		
 rule mapping_FastQ_files: # Aligne les sequences d'interet sur le genome (utilisation du container STAR) --> cree des fichiers BAM
 	input:
-		fastq1="{SRAID}_1.fastq.gz",fastq2="{SRAID}_2.fastq.gz",chr_index="ref/chrLength.txt"
+		fastq1="fastq_folder/{SRAID}_1.fastq.gz",fastq2="fastq_folder/{SRAID}_2.fastq.gz",chr_index="ref/chrLength.txt"
 	output:
-		"{SRAID}.bam"
+		"bam_folder/{SRAID}.bam"
 	threads: 16
 	singularity:
 		"docker://evolbioinfo/star:v2.7.6a"
@@ -101,9 +84,9 @@ rule mapping_FastQ_files: # Aligne les sequences d'interet sur le genome (utilis
 
 rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_FastQ_files
 	input:
-		"{SRAID}.bam"
+		"bam_folder/{SRAID}.bam"
 	output:
-		"{SRAID}.bam.bai"
+		"bam_folder/{SRAID}.bam.bai"
 	singularity:
 		"docker://evolbioinfo/samtools:v1.11"
 	shell:
@@ -112,23 +95,37 @@ rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_Fast
 
 rule gene_count:
         input:
-                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("{SRAID}.bam",SRAID=sra_id_list) #--> trouver comment l'ecrire pour eviter de mettre *.bam dans la commande shell
+                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),bai_files=expand("bam_folder/{SRAID}.bam.bai",SRAID=sra_id_list)
+		# Pour avoir 8 files : bam_files="bam_folder/{SRAID}.bam"
         output:
                 "gene_output.counts"
         threads: 16
         singularity:
                 "docker://evolbioinfo/subread:v2.0.1"
         shell:
-                "featureCounts -T {threads} -t gene -g gene_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
+                "featureCounts -p -T {threads} -t gene -g gene_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
 
 
 rule exon_count:
         input:
-                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("{SRAID}.bam",SRAID=sra_id_list) #--> trouver comment l'ecrire pour eviter de mettre *.bam dans la commande shell
+                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),bai_files=expand("bam_folder/{SRAID}.bam.bai",SRAID=sra_id_list)
+		# Pour avoir 8 files : bam_files="bam_folder/{SRAID}.bam"
         output:
                 "exon_output.counts"
         threads:16
         singularity:
                 "docker://evolbioinfo/subread:v2.0.1"
         shell:
-                "featureCounts -T {threads} -t exon -g exon_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
+                "featureCounts -p -T {threads} -t exon -g exon_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
+
+
+#rule statsAnalysis:
+#	input:
+#		"SraRunTable.txt","AnalyseGenes.R","gene_output.counts"
+#	output:
+#		"DE_analysis.txt"
+#	container:
+#		"docker://evolbioinfo/deseq2:v1.28.1"
+#	script:
+#		"AnalyseGenes.R"
+	

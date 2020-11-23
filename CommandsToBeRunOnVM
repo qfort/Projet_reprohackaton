@@ -1,8 +1,18 @@
 conda activate
 conda install singularity=3.6.3
+
+# Se mettre dans un dossier avec de la mémoire (au moins 80 Go)
 cd ../../mnt/mydatalocal
+
+# Cloner le repository
 mkdir git_repository
 cd git_repository
 git clone https://github.com/qfort/Projet_reprohackaton
 cd Projet_reprohackaton
+
+# Pour que sratoolkit ne renvoie pas d'erreurs
+snakemake --use-singularity -s sraConfig --cores 1
+# Faire exit
+
+# Lancement du workflow
 snakemake --use-singularity --cores 16 -s Snakefile

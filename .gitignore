@@ -1,3 +1,4 @@
+
 *.sra
 *.fast*
 *.fa*
@@ -13,3 +14,7 @@ exon*
 bam_folder/
 SJ*
 gene*
+
+.snakemake/
+.Rhistory
+
