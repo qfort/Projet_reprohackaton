@@ -5,7 +5,7 @@ list_chr=["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"
 ### Rules
 rule all:
 	input: 
-		"gene_output.counts","exon_output.counts","DE_analysis.txt" # Ajouter l'output du splicing
+		"gene_output.counts","exon_output.counts"#,"DE_analysis.txt" # Ajouter l'output du splicing
 
 		
 rule download_sra: #téléchargement des fichiers .sra
