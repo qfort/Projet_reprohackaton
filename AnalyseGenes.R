@@ -1,14 +1,10 @@
 ########### Differential expression analysis of genes according to the group of interest ##################
 
-
 rm(list=ls()) ## environment cleaning
 
 ## Loading of the librairies 
 library("DESeq2")
-library(tidyverse)
-library(tibble)
 library(EnhancedVolcano)
-library(org.Hs.eg.db)
 
 ### To define the working directory
 setwd('/mnt/mydatalocal/') ## A MODIFIER !!!! 
@@ -68,22 +64,18 @@ EnhancedVolcano(res,
 ### Keep only topgenes from our DE analysis
 topgenes <- res[res[,"pvalue"] < 0.05, ]
 
+### To convert topgenes into dataframe
 topgenes <- as.data.frame(topgenes)
-topups <- topgenes %>% 
-  filter(log2FoldChange>(log2(1.5))) %>% 
-  arrange(desc(log2FoldChange))
-  
-topdowns <- topgenes %>% 
-  filter(log2FoldChange<(-(log2(1.5)))) %>% 
-  arrange(log2FoldChange)
+## to keep only the top up-regulated genes
+topups <- topgenes[topgenes[,"log2FoldChange"]>(log2(1.5)),]
+topups <- topups[order(-topups$log2FoldChange),]
+
+## to keep only the top down-regulated genes
+topdowns <- topgenes[topgenes[,"log2FoldChange"]<(-log2(1.5)),]
+topdowns <- topdowns[order(topdowns$log2FoldChange),]
 
 ## Gather the two types of genes in a same output file
 fichier_sortie <- rbind(topups,topdowns)
-
-## Create a column with the name of the genes
-hs <- org.Hs.eg.db
-ts <- select(hs, keys = fichier_sortie[,1], columns = c("ENSEMBL", "SYMBOL"), keytype = "ENSEMBL")
-ts <- ts[!duplicated(ts$ENSEMBL),]
 
 ## Add this column in the output file
 fichier_sortie$Gene_symbol <- ts$SYMBOL
