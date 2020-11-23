@@ -1,0 +1,15 @@
+*.sra
+*.fast*
+*.fa*
+.ncbi
+.snakemake
+Homo_sapiens.GRCh38.101.chr.gtf
+dag.png
+ref/
+nohup.out
+Log*
+exon*
+
+bam_folder/
+SJ*
+gene*
