@@ -1,43 +1,59 @@
-rm(list=ls()) ##Nettoyage de l'environnement
+#### R script to analyze data from the workflow ####
 
-#### Installation des packages ###
+# Remove all objects from workspace
+rm(list=ls())
+
+
+### Install Biocmanager and the dependant packages ###
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 BiocManager::install(version = "3.12")
 BiocManager::install("DESeq2")
 library("DESeq2")
 
-## Données sur les exons 
+
+### Exons data ###
+
+# Import exons data from the workflow : output file named "exon_output.counts"
 countData <- read.table("exon_output.counts", sep ="\t", skip=1, header=T, row.names = 1) 
-countData$Exons <- rownames(countData) #Ajoute une colonne avec le nom des exons pour chaque ligne
-colnames(countData) <- sub(".bam", "", colnames(countData))# renomme les colonnes
-colnames(countData) <- sub("bam_folder.", "", colnames(countData))#renomme les colonnes
-#et transforme en matrice.
+countData$Exons <- rownames(countData) # Add a column with the exons' names for later analysis' purposes
+colnames(countData) <- sub(".bam", "", colnames(countData)) # Rename columns
+colnames(countData) <- sub("bam_folder.", "", colnames(countData))
 
-## Metadonnées
+
+### Metadata ###
+
+# Import metadata found at .......
+# Information on each studied samples and the type of data 
 meta_Data <- read.table("SraRunTable.txt", sep="\t", header = T)
-colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")]
-#creation d'une nouvelle colonne avec le status des tumeurs WT ou mutant de facon propre.
+colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")] # Extract the columns of interest for our analysis
+# Create a new column indicating if each sample (in row) is a mutant ( SF3B1_mutated) or a wild-type (SF3B1_WT) for the SF3B1 gene.
 colData$sf3b1_mutation_status_clean <- sapply(colData$sf3b1_mutation_status, function(x){ifelse(grepl(pattern = "WT",x),'SF3B1_WT','SF3B1_mutated')} )
-colData$condition <- as.factor(colData$sf3b1_mutation_status_clean) #Pour le volcano plot
+colData$condition <- as.factor(colData$sf3b1_mutation_status_clean) # Transform in a new column the type of the information about the mutation status : it will be used for the volcano plot
 
-####Analyse des données 
-count_matrix <- as.matrix(countData)
-count_matrix_exons <- as.matrix(countData[,c(6:13)])
+### Data analysis ###
+count_matrix <- as.matrix(countData) # Transform the dataframe into a matrix so it can be used in the DESeq functions
+count_matrix_exons <- as.matrix(countData[,c(6:13)]) # Transform the dataframe into a matrix so it can be used in the DESeq functions. 
+# Selection of the columns with the information for each sample (8 in total), the other columns are not useful for our analysis
+
+
+# Combination of the exons data and the metadata into a DESeq object to be used in the DESeq function
 dds <- DESeqDataSetFromMatrix(countData = count_matrix_exons,
                               colData = colData,
                               design = ~condition,
                               tidy = FALSE)
-#creation de l'objet DESeq
+
+# Calculation with DESeq function --> results from the analyse of the data
 dds <- DESeq(dds)
 
-res <- results(dds, contrast=c("condition","SF3B1_mutated","SF3B1_WT"), lfcThreshold = 1, alpha=0.05, tidy = T) ## obtenir le logFC en imposant l'ordre, tidy = T pour avoir les id dans une colonne
-#res <- lfcShrink(dds, coef="SF3B1_mutated_vs_SF3B1_WT", type="apeglm") ## obtenir les log-FoldChange
-# pour enlever les données NA 
+# Extraction of the information contained in the DESeq object in a usable dataframe 
+res <- results(dds, contrast=c("condition","SF3B1_mutated","SF3B1_WT"), lfcThreshold = 1, alpha=0.05, tidy = T) 
+
+# Remove N/A from the pvalue 
 res <- res[-which(is.na(res$pvalue)),]
 
-
-#Obtention du dataframe final avec la fusion des dataframes
+# Final dataframe obtained from the merging of our two main dataframes : different information to be visualised in the visualisationDataExons.R script
 data_output <- merge(res, countData[,c(6:14)], by.x = "row", by.y = "Exons", all = F)
 write.table(data_output, file = "exons_analysis.txt", quote = F, sep = "\t", row.names = F)
 
