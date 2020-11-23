@@ -92,8 +92,8 @@ DE_article <- read.table('DE_articles.txt', header = TRUE, sep = "\t")
 
 ## Collect common genes in a list 
 gene_list <- paste(fichier_sortie[,1], collapse="|")
-common_our <- c(grep(gene_list, fichier_sortie[,1], value =T))
 common_art <- c(grep(gene_list, DE_article[,1], value =T))
+common_our <- c(grep(gene_list, fichier_sortie[,1], value =T))
 
 
 ## Collect the analysis of common genes from the article and order it alphabetically
