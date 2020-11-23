@@ -5,7 +5,7 @@ list_chr=["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"
 ### Rules
 rule all:
 	input: 
-		"gene_output.counts","exon_output.counts","DE_analysis.txt"
+		"gene_output.counts","exon_output.counts","DE_analysis.txt" # Ajouter l'output du splicing
 
 		
 rule download_sra: #téléchargement des fichiers .sra
@@ -95,7 +95,7 @@ rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_Fast
 
 rule gene_count:
         input:
-                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),"bam_folder/{SRAID}.bam.bai"
+                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),bai_files=expand("bam_folder/{SRAID}.bam.bai",SRAID=sra_id_list)
 		# Pour avoir 8 files : bam_files="bam_folder/{SRAID}.bam"
         output:
                 "gene_output.counts"
@@ -108,7 +108,7 @@ rule gene_count:
 
 rule exon_count:
         input:
-                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),"bam_folder/{SRAID}.bam.bai"
+                annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),bai_files=expand("bam_folder/{SRAID}.bam.bai",SRAID=sra_id_list)
 		# Pour avoir 8 files : bam_files="bam_folder/{SRAID}.bam"
         output:
                 "exon_output.counts"
@@ -119,13 +119,13 @@ rule exon_count:
                 "featureCounts -p -T {threads} -t exon -g exon_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
 
 
-rule statsAnalysis:
-	input:
-		"SraRunTable.txt","Code_DESEQ_final.R"
-	output:
-		"DE_analysis.txt"
-	container:
-		"docker://evolbioinfo/deseq2:v1.28.1"
-	script:
-		"Code_DESEQ_final.R"
+#rule statsAnalysis:
+#	input:
+#		"SraRunTable.txt","AnalyseGenes.R","gene_output.counts"
+#	output:
+#		"DE_analysis.txt"
+#	container:
+#		"docker://evolbioinfo/deseq2:v1.28.1"
+#	script:
+#		"AnalyseGenes.R"
 	
