@@ -4,7 +4,7 @@
 rm(list=ls())
 
 
-### Install Biocmanager and the dependant packages ###
+### Install Biocmanager and the depending packages ###
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
@@ -30,7 +30,7 @@ meta_Data <- read.table("SraRunTable.txt", sep="\t", header = T)
 colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")] # Extract the columns of interest for our analysis
 # Create a new column indicating if each sample (in row) is a mutant ( SF3B1_mutated) or a wild-type (SF3B1_WT) for the SF3B1 gene.
 colData$sf3b1_mutation_status_clean <- sapply(colData$sf3b1_mutation_status, function(x){ifelse(grepl(pattern = "WT",x),'SF3B1_WT','SF3B1_mutated')} )
-colData$condition <- as.factor(colData$sf3b1_mutation_status_clean) # Transform in a new column the type of the information about the mutation status : it will be used for the volcano plot
+colData$condition <- as.factor(colData$sf3b1_mutation_status_clean) # Transform in a new column the type of the information about the mutation status : it will be used for the DESeq function
 
 ### Data analysis ###
 count_matrix <- as.matrix(countData) # Transform the dataframe into a matrix so it can be used in the DESeq functions
