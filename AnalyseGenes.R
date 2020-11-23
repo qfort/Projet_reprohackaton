@@ -92,11 +92,12 @@ DE_article <- read.table('DE_articles.txt', header = TRUE, sep = "\t")
 
 ## Collect common genes in a list 
 gene_list <- paste(fichier_sortie[,1], collapse="|")
-common <- c(grep(gene_list, DE_article[,1], value =T))
+common_our <- c(grep(gene_list, fichier_sortie[,1], value =T))
+common_art <- c(grep(gene_list, DE_article[,1], value =T))
 
 
 ## Collect the analysis of common genes from the article and order it alphabetically
-data_article <- DE_article[which(DE_article$EnsEMBLID %in% common),]
+data_article <- DE_article[which(DE_article$EnsEMBLID %in% common_art),]
 data_article <- data_article[order(data_article$EnsEMBLID),]
 
 ## Add a new column with the log2FC values
@@ -105,7 +106,7 @@ data_article$log2FoldChange <- sapply(data_article$Fold.Change, function(x) {-lo
 
 
 ## Collect the common genes in our analysis and order it alphabetically to have the same order
-our_analysis <- fichier_sortie[which(fichier_sortie[,1] %in% common),]
+our_analysis <- fichier_sortie[which(fichier_sortie[,1] %in% common_our),]
 our_analysis <- our_analysis[order(our_analysis$ENSEMBL_id),]
 
 ## Fusion of the two dataframes
