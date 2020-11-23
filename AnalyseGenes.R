@@ -76,7 +76,6 @@ topdowns <- topdowns[order(topdowns$log2FoldChange),]
 fichier_sortie <- rbind(topups,topdowns)
 
 ## Add this column in the output file
-fichier_sortie$Gene_symbol <- ts$SYMBOL
 colnames(fichier_sortie)[1] <- "ENSEMBL_id"
 
 ### Write the output file in our working directory
