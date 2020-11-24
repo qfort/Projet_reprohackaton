@@ -9,7 +9,8 @@ dag.png
 ref/
 nohup.out
 Log*
-exon*
+exon_output.counts.summary
+
 
 bam_folder/
 SJ*
