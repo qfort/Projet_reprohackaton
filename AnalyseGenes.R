@@ -6,7 +6,7 @@ rm(list=ls()) ## environment cleaning
 library("DESeq2")
 
 ### To define the working directory
-setwd('/mnt/mydatalocal/') ## A MODIFIER !!!! 
+setwd('/mnt/mydatalocal/git_repository/Projet_reprohackaton') ## A MODIFIER !!!! 
 
 
 #### PART1 : IMPORTING DATA ####
