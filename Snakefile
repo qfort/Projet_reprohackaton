@@ -5,7 +5,7 @@ list_chr=["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"
 ### Rules
 rule all:
 	input: 
-		"DE_analysis.txt", "DE_genes_comparison.txt"
+		"DE_analysis.txt", "DE_genes_comparison.txt","exons_analysis.txt"
 
 		
 rule download_sra: #téléchargement des fichiers .sra
@@ -128,4 +128,14 @@ rule statsAnalysis:
 		"docker://evolbioinfo/deseq2:v1.28.1"
 	script:
 		"AnalyseGenes.R"
+
+rule statAnalysisExon:
+	input:
+		"exon_output.counts"
+	output:
+		"exons_analysis.txt"
+	container:
+		"docker://evolbioinfo/deseq2:v1.28.1"
+	script:
+		"analyseDataExons.R"
 	
