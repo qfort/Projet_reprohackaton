@@ -4,7 +4,6 @@ rm(list=ls()) ## environment cleaning
 
 ## Loading of the librairies 
 library("DESeq2")
-library(EnhancedVolcano)
 
 ### To define the working directory
 setwd('/mnt/mydatalocal/') ## A MODIFIER !!!! 
@@ -48,16 +47,6 @@ res <- results(dds, tidy =T) ## tidy = T to have ENSEMBL id as the first column 
 ## Remove the NA data of the logFoldChange and pvalue columns
 res <- res[-which(is.na(res$log2FoldChange)),]
 res <- res[-which(is.na(res$pvalue)),]
-
-## Creation of a volcano plot with ENSEMBL id
-EnhancedVolcano(res,
-                lab = res[,1],
-                x = 'log2FoldChange',
-                y = 'pvalue',
-                ylim = c(0,10),
-                pCutoff = 0.05,
-                FCcutoff = log2(1.5),
-                labSize = 4.0)
 
 ### Keep only topgenes from our DE analysis
 topgenes <- res[res[,"pvalue"] < 0.05, ]
