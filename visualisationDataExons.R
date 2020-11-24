@@ -28,6 +28,7 @@ rownames(data_exons) = data_exons$row # Change the name of the rows
 ### Volcano Plot ###
 
 EnhancedVolcano(data_exons,
+                lab = data_exons$row,
                 x = 'log2FoldChange',
                 y = 'pvalue',
                 pCutoff = 0.05,
@@ -43,6 +44,7 @@ listeExons <- data_exons$row[data_exons$pvalue<0.05]
 count_matrix_exons <- as.matrix(data_exons[,c(8:15)]) 
 
 # Metadata : needed to create DESeq object used for the pheatmap function
+# Can be found at https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP017413&o=acc_s%3Aa
 meta_Data <- read.table("SraRunTable.txt", sep="\t", header = T)
 colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")]
 # Create a new column indicating if each sample (in row) is a mutant ( SF3B1_mutated) or a wild-type (SF3B1_WT) for the SF3B1 gene.
@@ -96,7 +98,7 @@ df_ADAM12$gene <- c("ADAM12")
 
 exonsF8 <- exonsEtude$F8[is.na(exonsEtude$F8) == F]
 df_F8 <- data_exons[data_exons$row %in% exonsF8,]
-#df_F8$gene <- c("F8") # 0 observations
+df_F8$gene <- c("F8")
 
 exonsGAS8 <- exonsEtude$GAS8[is.na(exonsEtude$GAS8) == F]
 df_GAS8 <- data_exons[data_exons$row %in% exonsGAS8,]
@@ -104,6 +106,6 @@ df_GAS8$gene <- c("GAS8")
 
 
 # Combination of the genes' exons of the article with the exons available in our data
-dfExonsArticleDonnees <- rbind(df_ABCC5, df_ADAM12, df_GUSBP11, df_ANKHD1, df_CRNDE, df_F8, df_GAS8)
+dfExonsArticleDonnees <- rbind(df_ABCC5, df_ADAM12,df_GUSBP11, df_ANKHD1, df_CRNDE, df_F8, df_GAS8)
 write.table(dfExonsArticleDonnees, file = "data_exonsArticle.txt", quote = F, sep = "\t", row.names = F)
 

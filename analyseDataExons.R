@@ -24,7 +24,7 @@ colnames(countData) <- sub("bam_folder.", "", colnames(countData))
 
 ### Metadata ###
 
-# Import metadata found at .......
+# Import metadata found at https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP017413&o=acc_s%3Aa
 # Information on each studied samples and the type of data 
 meta_Data <- read.table("SraRunTable.txt", sep="\t", header = T)
 colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")] # Extract the columns of interest for our analysis
