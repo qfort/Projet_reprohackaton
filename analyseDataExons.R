@@ -48,7 +48,7 @@ dds <- DESeqDataSetFromMatrix(countData = count_matrix_exons,
 dds <- DESeq(dds)
 
 # Extraction of the information contained in the DESeq object in a usable dataframe 
-res <- results(dds, contrast=c("condition","SF3B1_mutated","SF3B1_WT"), lfcThreshold = 1, alpha=0.05, tidy = T) 
+res <- results(dds, contrast=c("condition","SF3B1_mutated","SF3B1_WT"), tidy = T) 
 
 # Remove N/A from the pvalue 
 res <- res[-which(is.na(res$pvalue)),]

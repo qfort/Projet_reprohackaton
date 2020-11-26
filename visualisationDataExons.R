@@ -32,7 +32,7 @@ EnhancedVolcano(data_exons,
                 x = 'log2FoldChange',
                 y = 'pvalue',
                 pCutoff = 0.05,
-                FCcutoff = 2,)
+                FCcutoff = 1.5,)
 
 # Select exons significatively under or over transcript
 listeExons <- data_exons$row[data_exons$pvalue<0.05]
@@ -64,8 +64,8 @@ ntd <- normTransform(dds)
 # Dataframe with information for the heatmap, for each sample, its status (mutated or wild type) and if the exons are paired. 
 df <- as.data.frame(colData(dds)[,c("sf3b1_mutation_status_clean","LibraryLayout")])
 # Heatmap 
-pheatmap(assay(ntd)[listeExons,], cluster_rows=FALSE, show_rownames=F,
-         cluster_cols=TRUE, annotation_col=df)
+pheatmap(assay(ntd)[listeExons,], cluster_rows=F, show_rownames=F,
+         cluster_cols=F, annotation_col=df)
 
 
 ### Search of the genes' exons of the articles in our data from the workflow ###
@@ -109,3 +109,8 @@ df_GAS8$gene <- c("GAS8")
 dfExonsArticleDonnees <- rbind(df_ABCC5, df_ADAM12,df_GUSBP11, df_ANKHD1, df_CRNDE, df_F8, df_GAS8)
 write.table(dfExonsArticleDonnees, file = "data_exonsArticle.txt", quote = F, sep = "\t", row.names = F)
 
+### HeatMap ### 
+# Heatmap for the genes' exons found in the article
+
+pheatmap(assay(ntd)[dfExonsArticleDonnees$row,], cluster_rows=F, show_rownames=T,
+         cluster_cols=F, annotation_col=df)
