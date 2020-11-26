@@ -10,7 +10,7 @@ ref/
 nohup.out
 Log*
 exon_output.counts.summary
-
+*.txt
 
 bam_folder/
 SJ*

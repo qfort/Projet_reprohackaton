@@ -6,13 +6,13 @@ rm(list=ls())
 
 ### Install Biocmanager and the depending packages ###
 
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install(version = "3.12")
-BiocManager::install("DESeq2")
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+#BiocManager::install(version = "3.12")
+#BiocManager::install("DESeq2")
 library("DESeq2")
 
-
+setwd('.')
 ### Exons data ###
 
 # Import exons data from the workflow : output file named "exon_output.counts"
