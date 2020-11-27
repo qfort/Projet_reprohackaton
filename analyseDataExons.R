@@ -27,6 +27,8 @@ colnames(countData) <- sub("bam_folder.", "", colnames(countData))
 # Import metadata found at https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP017413&o=acc_s%3Aa
 # Information on each studied samples and the type of data 
 meta_Data <- read.table("SraRunTable.txt", sep="\t", header = T)
+meta_Data <- meta_Data[c(1,2,3,4,5,6,8,7),] # Rows for SRR628589 and SRR628588 are not in a good order 
+
 colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")] # Extract the columns of interest for our analysis
 # Create a new column indicating if each sample (in row) is a mutant ( SF3B1_mutated) or a wild-type (SF3B1_WT) for the SF3B1 gene.
 colData$sf3b1_mutation_status_clean <- sapply(colData$sf3b1_mutation_status, function(x){ifelse(grepl(pattern = "WT",x),'SF3B1_WT','SF3B1_mutated')} )
