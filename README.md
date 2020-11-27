@@ -7,8 +7,8 @@
 
 
 ## Contexte
-Nous avons à notre disposition deux articles. Le premier a été publié en 2013  par Harbour et al. (Nat. Genet. 2013)(https://pubmed.ncbi.nlm.nih.gov/23313955/). Les chercheurs ont séquencé les ARN de patients atteints de mélanome uvéal, possédant le gène SF3B1 muté ou non. Bien que SF3B1 soit un facteur d'épissage, il n'a pas été mis en évidence de différence d'épissage entre les deux groupes de patients.
-Furney et al. (Cancer Discov. 2013) (https://pubmed.ncbi.nlm.nih.gov/23861464/) ont analysé les mêmes jeux de données et ont observé un épissage différentiel entre les deux groupes de patients.
+Nous avons à notre disposition deux articles. Le premier a été publié en 2013  par [Harbour et al.](https://pubmed.ncbi.nlm.nih.gov/23313955/) (Nat. Genet. 2013). Les chercheurs ont séquencé les ARN de patients atteints de mélanome uvéal, possédant le gène SF3B1 muté ou non. Bien que SF3B1 soit un facteur d'épissage, il n'a pas été mis en évidence de différence d'épissage entre les deux groupes de patients.
+[Furney et al.](https://pubmed.ncbi.nlm.nih.gov/23861464/) (Cancer Discov. 2013) ont analysé les mêmes jeux de données et ont observé un épissage différentiel entre les deux groupes de patients.
 
 ## Objectifs
 Nous cherchons à reproduire les résultats d’analyses de RNA-seq obtenus dans les deux précédentes études sur le mélanome uvéal, par l’élaboration d’un workflow contenant différentes étapes de récupération, de transformation et d’analyse de données. Nous étudierons les différents résultats d’analyse obtenus en sortie de ce workflow et nous les comparerons à ceux des publications, fournis en données supplémentaires. Ce workflow a donc pour but de valider ou non l’obtention de données reproductibles et dans le cas échéant, nous essaierons de déterminer les éventuelles sources de variabilité. 
@@ -16,7 +16,7 @@ Nous cherchons à reproduire les résultats d’analyses de RNA-seq obtenus dans
 Un objectif supplémentaire qui en découle est que notre pipeline d'analyses doit être reproductible.
 
 ## Données
-Les données de séquençage sur lesquelles nous travaillons sont disponibles au format .sra sur le site du NCBI (https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP017413&o=acc_s%3Aa).
+Les données de séquençage sur lesquelles nous travaillons sont disponibles au format .sra sur le site du [NCBI](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP017413&o=acc_s%3Aa).
 
 ## Méthodes
 Nous avons établi ce workflow, que nous avons implémenté en utilisant le gestionnaire de workflow Snakemake :
