@@ -28,23 +28,23 @@ Nous avons établi ce workflow, que nous avons implémenté en utilisant le gest
 
 L'utilisation de Snakemake permet une garantie de la reproductibilité de notre workflow.
 
-### Exécution du workflow
-# Activation de l'environnement conda
+## Exécution du workflow
+### Activation de l'environnement conda
 `conda activate
 conda install singularity=3.6.3`
 
-# Se mettre dans un dossier avec de la mémoire (au moins 80 Go)
+### Se mettre dans un dossier avec de la mémoire (au moins 80 Go)
 `cd ../../mnt/mydatalocal`
 
-# Cloner le dossier GitHub
+### Cloner le dossier GitHub
 `mkdir git_repository
 cd git_repository
 git clone https://github.com/qfort/Projet_reprohackaton
 cd Projet_reprohackaton`
 
-# Exécution du fichier sraConfig pour paramétrer sratoolkit v2.10.8
+### Exécution du fichier sraConfig pour paramétrer sratoolkit v2.10.8
 `snakemake --use-singularity -s sraConfig --cores 1`
-# Faire exit
+Faire exit
 
-# Lancement du workflow
+### Lancement du workflow
 `snakemake --use-singularity --cores 16 -s Snakefile`
