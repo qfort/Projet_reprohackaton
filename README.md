@@ -57,4 +57,5 @@ Faire exit
 
 ## Visualisation des résultats
 Pour la visualisation des données sur les gènes, lancer le script R 'VisualisationGene.R'.
+
 Pour la visualisation des données d'exons, lancer le script Python 'request_exon_Ensembl.py' pour récupérer des exons de la base de données Ensembl. Ces données, stockées dans le fichier texte 'exon_table.csv', sont utilisées dans le script R 'visualisationDataExons.R'.
