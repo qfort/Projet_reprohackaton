@@ -23,6 +23,7 @@ library("EnhancedVolcano")
 
 data_exons <- read.table("exons_analysis.txt", header = T, sep = "\t")
 rownames(data_exons) = data_exons$row # Change the name of the rows
+data_exons <- data_exons[,c(1,2,3,4,5,6,7,8,9,10,15,14,11,12,13)] # rearrange the sammples for the heatmap
 
 
 ### Volcano Plot ###
@@ -37,7 +38,13 @@ EnhancedVolcano(data_exons,
                 titleLabSize = 24)
 
 # Select exons significatively under or over transcript
-listeExons <- data_exons$row[data_exons$pvalue<0.05]
+listeExons <- data_exons[data_exons$pvalue<0.05,]
+listeExonsInf <- listeExons[listeExons$log2FoldChange>= 1.5,]
+listeExonsSup <- listeExons[listeExons$log2FoldChange<= -1.5,]
+listeExons <- rbind(listeExonsInf,listeExonsSup)
+rm(listeExonsInf)
+rm(listeExonsSup)
+listeExons <- listeExons$row
 
 
 ### HeatMap ###
@@ -48,6 +55,7 @@ count_matrix_exons <- as.matrix(data_exons[,c(8:15)])
 # Metadata : needed to create DESeq object used for the pheatmap function
 # Can be found at https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP017413&o=acc_s%3Aa
 meta_Data <- read.table("SraRunTable.txt", sep="\t", header = T)
+meta_Data <- meta_Data[c(1,2,3,7,8,4,5,6),] #Rearrange the samples for the heatmap
 colData <- meta_Data[c("Run","LibraryLayout","sf3b1_mutation_status")]
 # Create a new column indicating if each sample (in row) is a mutant ( SF3B1_mutated) or a wild-type (SF3B1_WT) for the SF3B1 gene.
 colData$sf3b1_mutation_status_clean <- sapply(colData$sf3b1_mutation_status, function(x){ifelse(grepl(pattern = "WT",x),'SF3B1_WT','SF3B1_mutated')} )
