@@ -20,11 +20,11 @@ Les données de séquençage sur lesquelles nous travaillons sont disponibles au
 
 ## Méthodes
 Nous avons établi ce workflow, que nous avons implémenté en utilisant le gestionnaire de workflow Snakemake :
-1. Récupérer les données de séquençage au format FastQ ;
-2. Récupérer la version GRCh38 du génome humain et indexer le génome avec l'outil STAR ;
-3. Aligner les séquences d'intérêt sur le génome de référence, avec les annotations du génome préalablement obtenues, grâce à l'outil STAR ;
+1. Récupérer les données de séquençage au format FastQ grâce à l'outil [SRA toolkit](https://github.com/ncbi/sra-tools) ;
+2. Récupérer la version GRCh38 du génome humain sur le site du [NCBI](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39) et indexer le génome avec l'outil [STAR](https://github.com/alexdobin/STAR) ;
+3. Aligner les séquences d'intérêt sur le génome de référence, avec les annotations du génome préalablement obtenues, grâce à l'outil [STAR](https://github.com/alexdobin/STAR) ;
 4. Compter le nombre reads alignés sur chaque gène du génome humain et sur chaque exon, avec l'outil SUBREAD ;
-5. Analyse statistique avec le package DESeq2 de R.
+5. Analyse statistique avec le package [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) de R.
 
 L'utilisation de Snakemake permet une garantie de la reproductibilité de notre workflow.
 
@@ -34,7 +34,7 @@ L'utilisation de Snakemake permet une garantie de la reproductibilité de notre 
 
 `conda install singularity=3.6.3`
 
-### Se mettre dans un dossier avec de la mémoire (au moins 80 Go)
+### Se mettre dans un dossier avec au moins 80 Go d'espace disponible
 `cd ../../mnt/mydatalocal`
 
 ### Cloner le dossier GitHub
@@ -48,6 +48,7 @@ L'utilisation de Snakemake permet une garantie de la reproductibilité de notre 
 
 ### Exécution du fichier sraConfig pour paramétrer sratoolkit v2.10.8
 `snakemake --use-singularity -s sraConfig --cores 1`
+
 Faire exit
 
 ### Lancement du workflow
