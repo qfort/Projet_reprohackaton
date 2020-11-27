@@ -30,17 +30,17 @@ L'utilisation de Snakemake permet une garantie de la reproductibilité de notre 
 
 ## Exécution du workflow
 ### Activation de l'environnement conda
-`conda activate
-conda install singularity=3.6.3`
+`conda activate`
+`conda install singularity=3.6.3`
 
 ### Se mettre dans un dossier avec de la mémoire (au moins 80 Go)
 `cd ../../mnt/mydatalocal`
 
 ### Cloner le dossier GitHub
-`mkdir git_repository
-cd git_repository
-git clone https://github.com/qfort/Projet_reprohackaton
-cd Projet_reprohackaton`
+`mkdir git_repository`
+`cd git_repository`
+`git clone https://github.com/qfort/Projet_reprohackaton`
+`cd Projet_reprohackaton`
 
 ### Exécution du fichier sraConfig pour paramétrer sratoolkit v2.10.8
 `snakemake --use-singularity -s sraConfig --cores 1`
