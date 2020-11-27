@@ -7,8 +7,9 @@ rule all:
 	input: 
 		"DE_analysis.txt", "DE_genes_comparison.txt","exons_analysis.txt"
 
-		
-rule download_sra: #téléchargement des fichiers .sra
+
+### PART 1 : DOWNLOAD DATA
+rule download_sra: # Download .sra files containing sequencing data of 8 samples in the sra_folder folder.
   output:
     expand("sra_folder/{SRAID}.sra",SRAID=sra_id_list)
     
@@ -18,7 +19,7 @@ rule download_sra: #téléchargement des fichiers .sra
 
 
 
-rule download_chr: #téléchargement des chromosomes non dézippés 
+rule download_chr: # Download unzipped chromosomes of the GRCh38 version of the human genome in the chr_folder folder.
   output:
     expand("chr_folder/{CHR}.fa.gz",CHR=list_chr)
   
@@ -27,7 +28,7 @@ rule download_chr: #téléchargement des chromosomes non dézippés
       shell("wget -O chr_folder/{chr}.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{chr}.fa.gz".format(chr=list_chr[i]))
 
 
-rule download_annotations_genome:
+rule download_annotations_genome: # Download genome annotations for the GRCh38 genome version.
 	output:
 		"Homo_sapiens.GRCh38.101.chr.gtf"
 	shell:
@@ -37,7 +38,7 @@ rule download_annotations_genome:
 		"""
 
 
-rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (utilisation du container sratoolkit)
+rule convert_sra_fastq: # Create two fastq.gz files for each .sra file (use sratoolkit container). One file contains the genetic sequence in 5'3' and the other in 3'5'.
 	input:
 		"sra_folder/{SRAID}.sra"
 	output:
@@ -48,7 +49,9 @@ rule convert_sra_fastq: # Cree deux fichiers fastq.gz pour chaque fichier .sra (
 		"fastq-dump --gzip --outdir fastq_folder/ --split-files {input}"
 
 
-rule unzip_genome: # Decompresser le genome et le mettre dans un repertoire ref
+		
+### PART 2 : MAPPING SEQUENCES		
+rule unzip_genome: # Unzip human genome and put it in the ref folder.
 	input:
 		expand("chr_folder/{CHR}.fa.gz",CHR=list_chr)
 	output:
@@ -57,7 +60,7 @@ rule unzip_genome: # Decompresser le genome et le mettre dans un repertoire ref
 		"gunzip -c {input} > {output}"
 
 		
-rule indexation_genome: # Indexe le genome et cree de nombreux fichiers de sortie (utilisation du container STAR)
+rule indexation_genome: # Index human genome and create many output files (use STAR container).
 	input:
 		"ref/ref.fa"	
 	output:
@@ -69,7 +72,7 @@ rule indexation_genome: # Indexe le genome et cree de nombreux fichiers de sorti
 		"STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir ref/ --genomeFastaFiles {input}"
 
 		
-rule mapping_FastQ_files: # Aligne les sequences d'interet sur le genome (utilisation du container STAR) --> cree des fichiers BAM
+rule mapping_FastQ_files: # Map samples of interest on the human genome (use STAR container). Creates BAM files in the bam_folder folder.
 	input:
 		fastq1="fastq_folder/{SRAID}_1.fastq.gz",fastq2="fastq_folder/{SRAID}_2.fastq.gz",chr_index="ref/chrLength.txt"
 	output:
@@ -82,7 +85,7 @@ rule mapping_FastQ_files: # Aligne les sequences d'interet sur le genome (utilis
 		STAR --outSAMstrandField intronMotif --outFilterMismatchNmax 4 --outFilterMultimapNmax 10 --genomeDir ref --readFilesIn <(gunzip -c {input.fastq1}) <(gunzip -c {input.fastq2}) --runThreadN {threads} --outSAMunmapped None --outSAMtype BAM SortedByCoordinate --outStd BAM_SortedByCoordinate --genomeLoad NoSharedMemory --limitBAMsortRAM 7000000000 > {output}
 		"""
 
-rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_FastQ_files
+rule index_bam_files: # Index BAM files created by the rule mapping_FastQ_files.
 	input:
 		"bam_folder/{SRAID}.bam"
 	output:
@@ -93,7 +96,7 @@ rule index_bam_files: # Indexe les fichiers BAM crees par la règle mapping_Fast
 		"samtools index {input} {output}"
 
 
-rule gene_count:
+rule gene_count: # Counts the number of reads mapped on each gene of the human genome, to get the level of expression of the genes (use the subread container). Creates two files, especially gene_output.counts, used in the analysis rules.
         input:
                 annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),bai_files=expand("bam_folder/{SRAID}.bam.bai",SRAID=sra_id_list)
 		# Pour avoir 8 files : bam_files="bam_folder/{SRAID}.bam"
@@ -106,7 +109,7 @@ rule gene_count:
                 "featureCounts -p -T {threads} -t gene -g gene_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
 
 
-rule exon_count:
+rule exon_count: # Counts the number of reads mapped on the exons, to get the level of expression of the genes in case of alternative splicing (use the subread container). Creates two files, especially exon_output.counts, used in the analysis rules.
         input:
                 annot="Homo_sapiens.GRCh38.101.chr.gtf",bam_files=expand("bam_folder/{SRAID}.bam",SRAID=sra_id_list),bai_files=expand("bam_folder/{SRAID}.bam.bai",SRAID=sra_id_list)
 		# Pour avoir 8 files : bam_files="bam_folder/{SRAID}.bam"
@@ -119,7 +122,8 @@ rule exon_count:
                 "featureCounts -p -T {threads} -t exon -g exon_id -s 0 -a {input.annot} -o {output} {input.bam_files}"
 
 
-rule statsAnalysis:
+### PART 3 : STATISTICAL ANALYSIS
+rule statsAnalysis: # Statistical analysis on the samples, using the counting of reads per gene done in the gene_count rule.
 	input:
 		"SraRunTable.txt","AnalyseGenes.R","gene_output.counts"
 	output:
@@ -129,7 +133,7 @@ rule statsAnalysis:
 	script:
 		"AnalyseGenes.R"
 
-rule statAnalysisExon:
+rule statAnalysisExon: # Statistical analysis on the samples, using the counting of reads per exon done in the exon_count rule.
 	input:
 		"exon_output.counts"
 	output:
